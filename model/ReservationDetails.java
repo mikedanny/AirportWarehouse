@@ -39,11 +39,11 @@ public class ReservationDetails {
         return cost;
     }
 
-    public void setCost(int cost) {
-        this.cost = cost;
-    }
+//    public void setCost(int cost) {
+//        this.cost = cost;
+//    }
 
-    public Date getTime() throws ParseException {
+    public Date getDateAndTime() throws ParseException {
         LocalDateTime now = LocalDateTime.now();
         int hour = now.getHour();
         int minute = now.getMinute();
@@ -52,8 +52,36 @@ public class ReservationDetails {
         int year = now.getYear();
         String date = day + "/" + month + "/" + year + " " + hour + ":" + minute;
         SimpleDateFormat format = new SimpleDateFormat("dd/M/yyyy HH:mm");
-        Date d1 = format.parse(date);
+        Date parsedDate = format.parse(date);
 
-        return d1;
+        return parsedDate;
+    }
+
+    public String computeTimeDuration (Date d1, Date d2){
+        long diff = d2.getTime() - d1.getTime();
+        long diffMinutes = diff / (60 * 1000) % 60;
+        long diffHours = diff / (60 * 60 * 1000);
+        String totalTimeSpent = diffHours + " " + "hours" + " " + diffMinutes + " " + "minutes";
+
+        return totalTimeSpent;
+    }
+
+    public void setCost(String totalTimeSpent){
+        String[] hourAndMinute = totalTimeSpent.split(" ");
+        if (Integer.parseInt(hourAndMinute[0]) < 1 && Integer.parseInt(hourAndMinute[2]) > 0){
+            cost = 10;
+        }
+        else if (Integer.parseInt(hourAndMinute[0]) == 1 && Integer.parseInt(hourAndMinute[2]) == 0){
+            cost = 10;
+        }
+        else if (Integer.parseInt(hourAndMinute[0]) == 1 && Integer.parseInt(hourAndMinute[2]) > 0){
+            cost = 15;
+        }
+        else if (Integer.parseInt(hourAndMinute[0]) > 1 && Integer.parseInt(hourAndMinute[2]) == 0){
+            cost = 10 + 5 * (Integer.parseInt(hourAndMinute[0]) - 1);
+        }
+        else{
+            cost = 10 + 5 * (Integer.parseInt(hourAndMinute[0]));
+        }
     }
 }

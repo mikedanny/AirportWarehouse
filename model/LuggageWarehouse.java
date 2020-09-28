@@ -13,7 +13,7 @@ public class LuggageWarehouse {
 
     public LuggageWarehouse(int nrOfSpots) {
         spots = new ArrayList<>(nrOfSpots);
-        spots = IntStream.range(1, 30).boxed().map(LuggageSpot::new).collect(Collectors.toList());
+        spots = IntStream.range(0, nrOfSpots).boxed().map(LuggageSpot::new).collect(Collectors.toList());
     }
 
     public ArrayList<LuggageSpot> getAvailableSpots(){

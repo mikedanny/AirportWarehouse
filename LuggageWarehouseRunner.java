@@ -2,25 +2,13 @@ package com.beenear.warehouse;
 
 import com.beenear.warehouse.model.*;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
 
 public class LuggageWarehouseRunner {
     public static void main(String args[]) throws ParseException {
-//        LocalDateTime now = LocalDateTime.now();
-//        int hour = now.getHour();
-//        int minute = now.getMinute();
-
-
 //        LuggageWarehouse luggageWarehouse = new LuggageWarehouse(20);
 //        luggageWarehouse.getFreeSpot();
 //        int locker = luggageWarehouse.putLugagge();
@@ -33,11 +21,11 @@ public class LuggageWarehouseRunner {
         int weight = sc.nextInt();
 
         System.out.println("Please enter the size of your luggage in the length x width format");
-        String size = sc.nextLine();
+        String size = sc.next();
 
-        System.out.println("Please specify whether your luggage contains something fragile or valuable. If not, please write daily instead");
-        String type = sc.nextLine();
-        LuggageContent luggageContent = LuggageContent.valueOf(type);
+        System.out.println("Please specify whether your luggage contains something fragile or valuable. If not, please write daily instead.");
+        String type = sc.next();
+        LuggageContent luggageContent = LuggageContent.valueOf(type.toUpperCase());
 
         Luggage luggage = new Luggage(weight, size, luggageContent);
 
@@ -46,28 +34,34 @@ public class LuggageWarehouseRunner {
         System.out.println("Our warehouse currently has a number of" + " " + availableSpots.size() + " " + "available spots.");
 
         Random rand = new Random();
-        LuggageSpot reservedSpot = availableSpots.get(rand.nextInt(availableSpots.size()));
-        int reservedIDCode = reservedSpot.getSpotNumber();
+        LuggageSpot randomSpot = availableSpots.get(rand.nextInt(availableSpots.size()));
+        int reservedIDCode = randomSpot.getSpotNumber();
 
-        reservedSpot = reservedSpot.fillSpot(luggage);
+        LuggageSpot reservedSpot = randomSpot.fillSpot(luggage);
+        ReservationDetails reservationDetails = new ReservationDetails();
+        Date checkIn = reservationDetails.getDateAndTime();
 
-        System.out.println("Your luggage has received a warehouse spot. Your luggage identification code is" + " " + reservedIDCode);
+        System.out.println("Your luggage has received a warehouse spot on the following date:" + " " + checkIn + "."
+                + "Your luggage identification code is" + " " + reservedIDCode + "." + "Please press 1 when you wish to recover your luggage");
 
-//        LocalTime now = LocalTime.now();
-//        int hour = now.getHour();
-//        int minute = now.getMinute();
-//        String dateStart = "11/03/14 09:29:58";
-//        String dateStop = "11/03/14 09:33:43";
+        if (sc.nextInt() == 1){
+            Optional<Luggage> freedLuggage = reservedSpot.removeLuggage(reservedIDCode);
+            ReservationDetails releaseDetails = new ReservationDetails();
+            Date checkOut = releaseDetails.getDateAndTime();
+            String totalTimeSpent = releaseDetails.computeTimeDuration(checkIn, checkOut);
 
-// Custom date format
-//        SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
-//        Date d1 = format.parse(dateStart);
-//        Date d2 = format.parse(dateStop);
-//
-//        long diff = d2.getTime() - d1.getTime();
-//        long diffMinutes = diff / (60 * 1000);
-//        long diffHours = diff / (60 * 60 * 1000);
-//        System.out.println(diffHours + " " + diffMinutes);
+            releaseDetails.setCost(totalTimeSpent);
+            int cost = releaseDetails.getCost();
+
+            System.out.println("Luggage with the IDCode" + " " + reservedIDCode + "," + "with weight=" + freedLuggage.get().getWeight() + " " + "kg" + "," + " " +
+                    "size=" + freedLuggage.get().getSize() + " " + "cm" + " " + "and type=" + freedLuggage.get().getType() + " " + "has been reserved from" + " " + checkIn + " " +
+                    "until" + " " + checkOut + "," + " " + "for a total time of" + " " + totalTimeSpent + "." + " " + "The total cost is" + " " +
+                    cost + " " + "lei.");
+
+//            System.out.println("Luggage specifications:" + " " + freedLuggage + "\n" + "Total time spent:" + " " + totalTimeSpent + "\n" +
+//                    "Total cost:" + " " + cost);
+        }
+        sc.close();
 
     }
 

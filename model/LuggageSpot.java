@@ -49,7 +49,12 @@ public class LuggageSpot {
 
     public Optional<Luggage> removeLuggage(int userCode){
         Optional<Luggage> luggageData = luggage;
-        if (userCode == IDCode){
+        if (userCode != IDCode || luggageData.isEmpty())
+        {
+            System.out.println("Error: wrong identification code");
+            return Optional.empty();
+        }
+        else{
             luggage = Optional.empty();
         }
         return luggageData;
